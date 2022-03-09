@@ -1,9 +1,7 @@
-import requests
-import json
+import os
 import math
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from client_info import *
 
 scope_lib = "user-library-read"
 scope_playlist = "playlist-read-private"
@@ -73,7 +71,7 @@ def parse_time(time_ms) :   # parses a time duration in ms into a h:m:s string
 
 
 # auth token
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = cl_id, client_secret = cl_sec, redirect_uri = red_uri, scope=scope_playlist))
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.environ.get('SPOTIFY_ID'), client_secret = os.environ.get('SPOTIFY_SECRET'), redirect_uri = os.environ.get('REDIRECT_URI'), scope=scope_playlist))
 
 res_playlists = sp.current_user_playlists() # get list of playlists
 
@@ -382,7 +380,7 @@ print("Most Acoustic Playlist: %s (%.5f)" % (global_max_avg_acous_pl, global_max
 print("Most Instrumental Playlist: %s (%.5f)" % (global_max_avg_instr_pl, global_max_avg_instr))
 print("Happiest Playlist: %s (%.5f)" % (global_max_avg_valen_pl, global_max_avg_valen))
 print("Most Popular Playlist: %s (%.5f)" % (global_max_avg_pop_pl, global_max_avg_pop))
-print("Playlist with Longest Average Song Length %s (%s)\n" % (global_max_avg_length_pl, parse_time(global_max_avg_length)))
+print("Playlist with Longest Average Song Length: %s (%s)\n" % (global_max_avg_length_pl, parse_time(global_max_avg_length)))
 print("Lows:")
 print("Least Danceable Playlist: %s (%.5f)" % (global_min_avg_dance_pl, global_min_avg_dance))
 print("Least Energetic Playlist: %s (%.5f)" % (global_min_avg_energ_pl, global_min_avg_energ))
@@ -392,7 +390,7 @@ print("Least Acoustic Playlist: %s (%.5f)" % (global_min_avg_acous_pl, global_mi
 print("Least Instrumental Playlist: %s (%.5f)" % (global_min_avg_instr_pl, global_min_avg_instr))
 print("Saddest Playlist: %s (%.5f)" % (global_min_avg_valen_pl, global_min_avg_valen))
 print("Least Popular Playlist: %s (%.5f)" % (global_min_avg_pop_pl, global_min_avg_pop))
-print("Playlist with Shortest Average Song Length %s (%s)\n" % (global_min_avg_length_pl, parse_time(global_min_avg_length)))
+print("Playlist with Shortest Average Song Length: %s (%s)\n" % (global_min_avg_length_pl, parse_time(global_min_avg_length)))
 print("Totals")
 print("Average Danceability: %.5f" % (global_avg_dance))
 print("Average Energy: %.5f" % (global_avg_energ))
