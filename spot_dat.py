@@ -1,9 +1,7 @@
-import requests
-import json
+import os
 import math
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from client_info import *
 
 scope_lib = "user-library-read"
 scope_playlist = "playlist-read-private"
@@ -73,7 +71,7 @@ def parse_time(time_ms) :   # parses a time duration in ms into a h:m:s string
 
 
 # auth token
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = cl_id, client_secret = cl_sec, redirect_uri = red_uri, scope=scope_playlist))
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.environ.get('SPOTIFY_ID'), client_secret = os.environ.get('SPOTIFY_SECRET'), redirect_uri = os.environ.get('REDIRECT_URI'), scope=scope_playlist))
 
 res_playlists = sp.current_user_playlists() # get list of playlists
 
