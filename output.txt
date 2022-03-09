@@ -1,0 +1,153 @@
+Future Funk
+Songs: 27
+0.65156 0.79393 -6.08263 0.28977 0.01616 0.23755 0.59304 41.25926 3:04
+Most Popular Song: Memory Lane (68)
+Longest Song: Emotional Prism (4:33)
+Playlist Duration: 1:22:46
+
+idfk
+Songs: 106
+0.61543 0.76022 -5.60490 0.13571 0.12435 0.17851 0.50797 49.98113 2:39
+Most Popular Song: moment (83)
+Longest Song: Today I Opened My Eyes (5:22)
+Playlist Duration: 4:41:10
+
+Kawaii Neko Uwu
+Songs: 44
+0.60039 0.87586 -3.77393 0.14218 0.07028 0.06589 0.63736 52.15909 3:45
+Most Popular Song: Mayonaka no Door / Stay With Me (78)
+Longest Song: Mayonaka no Door / Stay With Me (5:12)
+Playlist Duration: 2:44:55
+
+Synthwave
+Songs: 68
+0.54559 0.79999 -6.64460 0.05684 0.05068 0.62471 0.27676 35.67647 4:34
+Most Popular Song: Turbo Killer (62)
+Longest Song: Gods of the Artificial (8:50)
+Playlist Duration: 5:10:12
+
+Lo-Fi
+Songs: 56
+0.67061 0.40356 -10.56375 0.14845 0.47148 0.59271 0.42727 24.73214 2:24
+Most Popular Song: The Girl I Haven't Met (61)
+Longest Song: Chillaxin' By The Sea (4:01)
+Playlist Duration: 2:14:22
+
+Study
+Songs: 193
+0.61228 0.63219 -8.52928 0.12043 0.22284 0.56032 0.38138 32.77720 3:37
+Most Popular Song: Affection (69)
+Longest Song: Strobe (10:33)
+Playlist Duration: 11:37:00
+
+Stranger Things
+Songs: 26
+0.35119 0.27234 -18.85669 0.04842 0.67858 0.91708 0.12127 32.03846 2:24
+Most Popular Song: Kids (56)
+Longest Song: Stranger Things - Extended (5:26)
+Playlist Duration: 1:02:16
+
+Bops
+Songs: 92
+0.64064 0.66164 -7.49289 0.07058 0.21058 0.06741 0.65093 68.70652 3:49
+Most Popular Song: INDUSTRY BABY (feat. Jack Harlow) (90)
+Longest Song: Blinded By The Light (7:08)
+Playlist Duration: 5:51:22
+
+Party
+Songs: 92
+0.72965 0.72010 -5.32564 0.15888 0.07571 0.00054 0.55949 67.78261 3:42
+Most Popular Song: goosebumps (88)
+Longest Song: m.A.A.d city (5:50)
+Playlist Duration: 5:40:23
+
+Songs for Mom
+Songs: 24
+0.62029 0.67475 -6.08171 0.14630 0.13241 0.14309 0.37370 32.29167 3:30
+Most Popular Song: Peanut Butter Jelly (67)
+Longest Song: Easy Go - Pham Remix (4:26)
+Playlist Duration: 1:24:05
+
+Rock
+Songs: 25
+0.39980 0.88424 -4.76084 0.07488 0.00367 0.16989 0.40884 51.32000 4:21
+Most Popular Song: Hail to the King (78)
+Longest Song: Funeralopolis (8:43)
+Playlist Duration: 1:48:41
+
+Old Jams
+Songs: 222
+0.66853 0.75187 -5.14512 0.10035 0.11837 0.00571 0.60511 61.91892 3:48
+Most Popular Song: Still D.R.E. (91)
+Longest Song: Live Your Life - feat. Rihanna (5:39)
+Playlist Duration: 14:05:13
+
+Rap
+Songs: 289
+0.75436 0.63434 -6.30339 0.24235 0.14832 0.00425 0.46869 53.28720 3:18
+Most Popular Song: Still D.R.E. (91)
+Longest Song: Ill Mind of Hopsin 8 (6:30)
+Playlist Duration: 15:53:05
+
+Eminem
+Songs: 33
+0.74485 0.74724 -4.48842 0.27157 0.10745 0.00031 0.57112 65.96970 4:37
+Most Popular Song: Without Me (92)
+Longest Song: Wicked Ways (6:31)
+Playlist Duration: 2:32:30
+
+EDM
+Songs: 416
+0.61789 0.81753 -4.09745 0.15220 0.06258 0.21254 0.38330 30.72596 3:38
+Most Popular Song: Losing It (78)
+Longest Song: Ferity (6:49)
+Playlist Duration: 25:12:09
+
+Playlist Stats:
+---------------
+Highs:
+Most Danceable Playlist: Rap (0.75436)
+Most Energetic Playlist: Rock (0.88424)
+Loudest Playlist: Kawaii Neko Uwu (-3.77393dB)
+Most Speechful Playlist: Future Funk (0.28977)
+Most Acoustic Playlist: Stranger Things (0.67858)
+Most Instrumental Playlist: Stranger Things (0.91708)
+Happiest Playlist: Bops (0.65093)
+Most Popular Playlist: Bops (68.70652)
+Playlist with Longest Average Song Length: Eminem (4:37)
+
+Lows:
+Least Danceable Playlist: Stranger Things (0.35119)
+Least Energetic Playlist: Stranger Things (0.27234)
+Quietest Playlist: Stranger Things (-18.85669dB)
+Least Speechful Playlist: Stranger Things (0.04842)
+Least Acoustic Playlist: Rock (0.00367)
+Least Instrumental Playlist: Eminem (0.00031)
+Saddest Playlist: Stranger Things (0.12127)
+Least Popular Playlist: Lo-Fi (24.73214)
+Playlist with Shortest Average Song Length: Stranger Things (2:24)
+
+Totals
+Average Danceability: 0.61487
+Average Energy: 0.69532
+Average Loudness: -6.91675dB
+Average Speechfulness: 0.14393
+Average Acousticness: 0.16623
+Average Instrumentalness: 0.25203
+Overall Happiness: 0.46442
+Overall Popularity: 46.70842
+Total Length of All Playlists: 101:20:11
+
+
+Song Stats:
+-----------
+Highs:
+Most Danceable Song: SexyBack (feat. Timbaland) by Justin Timberlake (0.96700)
+Most Energetic Song: Poppippo by LamazeP (0.99900)
+Loudest Song: homeswitcher by dltzk (1.83600dB)
+Most Speechful Song: over it by aimless (0.93700)
+Most Acoustic Song: 素敵滅法 by 物語シリーズ (0.98800)
+Most Instrumental Song: Eight Fifteen by Kyle Dixon & Michael Stein (0.99100)
+Happiest Song: Faidherbe Square by Proleter (0.97500)
+Longest Song: Strobe by deadmau5 (10:33)
+Most Popular Song : Without Me by Eminem (92)

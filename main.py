@@ -1,74 +1,13 @@
 import os
-import math
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+from helper import *
+from global_vars import *
 
 scope_lib = "user-library-read"
 scope_playlist = "playlist-read-private"
 
 my_pl_cnt = 0
-
-# global maximum playlist averages across all playlists
-global_max_length = 0
-global_max_pop = 0
-global_duration = 0
-global_max_avg_dance = 0
-global_max_avg_energ = 0
-global_max_avg_loud = -60
-global_max_avg_speech = 0
-global_max_avg_acous = 0
-global_max_avg_instr = 0
-global_max_avg_valen = 0
-global_max_avg_pop = 0
-global_max_avg_length = 0
-
-# global minimum playlist averages across all playlists
-global_min_avg_dance = 1.1
-global_min_avg_energ = 1.1
-global_min_avg_loud = 10
-global_min_avg_speech = 1.1
-global_min_avg_acous = 1.1
-global_min_avg_instr = 1.1
-global_min_avg_valen = 1.1
-global_min_avg_pop = 101
-global_min_avg_length = 300000
-
-# global averages across all playlists
-global_avg_dance = 0
-global_avg_energ = 0
-global_avg_loud = 0
-global_avg_speech = 0
-global_avg_acous = 0
-global_avg_instr = 0
-global_avg_valen = 0
-global_avg_pop = 0
-global_length = 0
-
-# global maximum song values
-global_max_length = 0
-global_max_pop = 0
-global_max_dance = 0
-global_max_energ = 0
-global_max_loud = -60
-global_max_speech = 0
-global_max_acous = 0
-global_max_instr = 0
-global_max_valen = 0
-
-def parse_time(time_ms) :   # parses a time duration in ms into a h:m:s string
-    time_s = time_ms / 1000
-    time_min = time_s / 60
-    time_sec = time_s % 60
-    
-    if time_s > 3599 :
-        time_hour = time_s / 3600
-        time_min = time_s % 3600 / 60
-        time_min_sec = str(math.trunc(time_hour)) + ":" + "{0:0>2}".format(str(math.trunc(time_min))) + ":" + "{0:0>2}".format(str(round(time_sec)))
-    else :
-        time_min_sec = str(math.trunc(time_min)) + ":" + "{0:0>2}".format(str(round(time_sec)))
-    
-    return time_min_sec
-
 
 # auth token
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.environ.get('SPOTIFY_ID'), client_secret = os.environ.get('SPOTIFY_SECRET'), redirect_uri = os.environ.get('REDIRECT_URI'), scope=scope_playlist))
@@ -276,42 +215,41 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
             global_max_pop_art = pop_song_art
         
         # playlist maximums
+        if avg_pop > global_playlist_maxes['popularity']: # find maximum average popularity across all playlists
+            global_playlist_maxes['popularity'] = avg_pop
+            global_max_avg_pop_pl = pl_name
         
-        if avg_length > global_max_avg_length: # find maximum average song length across all playlists
-            global_max_avg_length = avg_length
+        if avg_length > global_playlist_maxes['duration_ms']: # find maximum average song length across all playlists
+            global_playlist_maxes['duration_ms'] = avg_length
             global_max_avg_length_pl = pl_name
         
-        if avg_dance > global_max_avg_dance: # find maximum average danceability across all playlists
-            global_max_avg_dance = avg_dance
+        if avg_dance > global_playlist_maxes['danceability']: # find maximum average danceability across all playlists
+            global_playlist_maxes['danceability'] = avg_dance
             global_max_avg_dance_pl = pl_name
         
-        if avg_energ > global_max_avg_energ: # find maximum average energy across all playlists
-            global_max_avg_energ = avg_energ
+        if avg_energ > global_playlist_maxes['energy']: # find maximum average energy across all playlists
+            global_playlist_maxes['energy'] = avg_energ
             global_max_avg_energ_pl = pl_name
             
-        if avg_loud > global_max_avg_loud: # find maximum average loudness across all playlists
-            global_max_avg_loud = avg_loud
+        if avg_loud > global_playlist_maxes['loudness']: # find maximum average loudness across all playlists
+            global_playlist_maxes['loudness'] = avg_loud
             global_max_avg_loud_pl = pl_name
         
-        if avg_speech > global_max_avg_speech: # find maximum average speechiness across all playlists
-            global_max_avg_speech = avg_speech
+        if avg_speech > global_playlist_maxes['speechiness']: # find maximum average speechiness across all playlists
+            global_playlist_maxes['speechiness'] = avg_speech
             global_max_avg_speech_pl = pl_name
         
-        if avg_acous > global_max_avg_acous: # find maximum average acousticness across all playlists
-            global_max_avg_acous = avg_acous
+        if avg_acous > global_playlist_maxes['acousticness']: # find maximum average acousticness across all playlists
+            global_playlist_maxes['acousticness'] = avg_acous
             global_max_avg_acous_pl = pl_name
         
-        if avg_instr > global_max_avg_instr: # find maximum average instrumentalness across all playlists
-            global_max_avg_instr = avg_instr
+        if avg_instr > global_playlist_maxes['instrumentalness']: # find maximum average instrumentalness across all playlists
+            global_playlist_maxes['instrumentalness'] = avg_instr
             global_max_avg_instr_pl = pl_name
         
-        if avg_valen > global_max_avg_valen: # find maximum average valence across all playlists
-            global_max_avg_valen = avg_valen
+        if avg_valen > global_playlist_maxes['valence']: # find maximum average valence across all playlists
+            global_playlist_maxes['valence'] = avg_valen
             global_max_avg_valen_pl = pl_name
-            
-        if avg_pop > global_max_avg_pop: # find maximum average popularity across all playlists
-            global_max_avg_pop = avg_pop
-            global_max_avg_pop_pl = pl_name
         
         # playlist minimums
         
@@ -372,15 +310,15 @@ global_avg_pop /= my_pl_cnt
     
 print("Playlist Stats: \n---------------")
 print("Highs:")
-print("Most Danceable Playlist: %s (%.5f)" % (global_max_avg_dance_pl, global_max_avg_dance))
-print("Most Energetic Playlist: %s (%.5f)" % (global_max_avg_energ_pl, global_max_avg_energ))
-print("Loudest Playlist: %s (%.5fdB)" % (global_max_avg_loud_pl, global_max_avg_loud))
-print("Most Speechful Playlist: %s (%.5f)" % (global_max_avg_speech_pl, global_max_avg_speech))
-print("Most Acoustic Playlist: %s (%.5f)" % (global_max_avg_acous_pl, global_max_avg_acous))
-print("Most Instrumental Playlist: %s (%.5f)" % (global_max_avg_instr_pl, global_max_avg_instr))
-print("Happiest Playlist: %s (%.5f)" % (global_max_avg_valen_pl, global_max_avg_valen))
-print("Most Popular Playlist: %s (%.5f)" % (global_max_avg_pop_pl, global_max_avg_pop))
-print("Playlist with Longest Average Song Length: %s (%s)\n" % (global_max_avg_length_pl, parse_time(global_max_avg_length)))
+print("Most Danceable Playlist: %s (%.5f)" % (global_max_avg_dance_pl, global_playlist_maxes['danceability']))
+print("Most Energetic Playlist: %s (%.5f)" % (global_max_avg_energ_pl, global_playlist_maxes['energy']))
+print("Loudest Playlist: %s (%.5fdB)" % (global_max_avg_loud_pl, global_playlist_maxes['loudness']))
+print("Most Speechful Playlist: %s (%.5f)" % (global_max_avg_speech_pl, global_playlist_maxes['speechiness']))
+print("Most Acoustic Playlist: %s (%.5f)" % (global_max_avg_acous_pl, global_playlist_maxes['acousticness']))
+print("Most Instrumental Playlist: %s (%.5f)" % (global_max_avg_instr_pl, global_playlist_maxes['instrumentalness']))
+print("Happiest Playlist: %s (%.5f)" % (global_max_avg_valen_pl, global_playlist_maxes['valence']))
+print("Most Popular Playlist: %s (%.5f)" % (global_max_avg_pop_pl, global_playlist_maxes['popularity']))
+print("Playlist with Longest Average Song Length: %s (%s)\n" % (global_max_avg_length_pl, parse_time(global_playlist_maxes['duration_ms'])))
 print("Lows:")
 print("Least Danceable Playlist: %s (%.5f)" % (global_min_avg_dance_pl, global_min_avg_dance))
 print("Least Energetic Playlist: %s (%.5f)" % (global_min_avg_energ_pl, global_min_avg_energ))
@@ -413,11 +351,3 @@ print("Most Instrumental Song: %s by %s (%.5f)" % (global_max_instr_song, global
 print("Happiest Song: %s by %s (%.5f)" % (global_max_valen_song, global_max_valen_art, global_max_valen))
 print("Longest Song: %s by %s (%s)" % (global_long_song, global_max_long_art, parse_time(global_max_length)))
 print("Most Popular Song : %s by %s (%d)" % (global_max_pop_song, global_max_pop_art, global_max_pop))
-   
-   
-   
-   
-   
-   
-   
-    
