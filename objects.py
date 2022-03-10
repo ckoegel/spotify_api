@@ -1,3 +1,4 @@
+# list of audio features
 audio_features_list = [
     'danceability',
     'energy',
@@ -59,12 +60,3 @@ song_maximums = {
     'instrumentalness': 0,
     'valence': 0,
 }
-# global_max_length = 0
-# global_max_pop = 0
-# global_max_dance = 0
-# global_max_energ = 0
-# global_max_loud = -60
-# global_max_speech = 0
-# global_max_acous = 0
-# global_max_instr = 0
-# global_max_valen = 0
