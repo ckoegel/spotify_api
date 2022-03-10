@@ -1,3 +1,14 @@
+
+audio_features_list = [
+    'danceability',
+    'energy',
+    'loudness',
+    'speechiness',
+    'acousticness',
+    'instrumentalness',
+    'valence'
+]
+
 # global maximum playlist averages across all playlists
 global_playlist_maxes = {
     'popularity': 0,
@@ -12,19 +23,22 @@ global_playlist_maxes = {
 }
 
 # global minimum playlist averages across all playlists
-global_min_avg_dance = 1.1
-global_min_avg_energ = 1.1
-global_min_avg_loud = 10
-global_min_avg_speech = 1.1
-global_min_avg_acous = 1.1
-global_min_avg_instr = 1.1
-global_min_avg_valen = 1.1
-global_min_avg_pop = 101
-global_min_avg_length = 300000
+global_playlist_mins = {
+    'popularity': 101,
+    'duration_ms': 300000,
+    'danceability': 1.1,
+    'energy': 1.1,
+    'loudness': 10,
+    'speechiness': 1.1,
+    'acousticness': 1.1,
+    'instrumentalness': 1.1,
+    'valence': 1.1,
+}
 
 # global averages across all playlists
 library_averages = {
     'popularity': 0,
+    'duration_ms': 0,
     'danceability': 0,
     'energy': 0,
     'loudness': 0,
@@ -33,7 +47,6 @@ library_averages = {
     'instrumentalness': 0,
     'valence': 0
 }
-global_length = 0
 
 # global maximum song values
 global_max_length = 0
