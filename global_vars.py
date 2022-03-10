@@ -23,14 +23,16 @@ global_min_avg_pop = 101
 global_min_avg_length = 300000
 
 # global averages across all playlists
-global_avg_dance = 0
-global_avg_energ = 0
-global_avg_loud = 0
-global_avg_speech = 0
-global_avg_acous = 0
-global_avg_instr = 0
-global_avg_valen = 0
-global_avg_pop = 0
+library_averages = {
+    'popularity': 0,
+    'danceability': 0,
+    'energy': 0,
+    'loudness': 0,
+    'speechiness': 0,
+    'acousticness': 0,
+    'instrumentalness': 0,
+    'valence': 0
+}
 global_length = 0
 
 # global maximum song values
