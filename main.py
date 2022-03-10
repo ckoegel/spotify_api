@@ -40,11 +40,11 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.environ.get('SPOTI
 res_playlists = sp.current_user_playlists() # get list of playlists
 
 for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on account
-    pl_name = playlist['name']
+    playlist_name = playlist['name']
     tracks = playlist['tracks']
     num_songs = tracks['total']
     owner = playlist['owner']
-    pl_id = playlist['id']
+    playlist_id = playlist['id']
     
     playlist_sums = {
         'popularity': 0,
@@ -57,14 +57,12 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
         'instrumentalness': 0,
         'valence': 0
     }
-    max_length = 0
-    max_pop = 0
-    long_song = ""
-    pop_song = ""
+    maximum_song_length = 0
+    maximum_song_popularity = 0
     track_uris = []
     
     if owner['id'] == "ckoegel1006" :  # do for only playlists created by me
-        res_pl = sp.playlist(pl_id)
+        res_pl = sp.playlist(playlist_id)
         tracklist = res_pl['tracks']
         my_pl_cnt += 1
         while 1:
@@ -73,23 +71,26 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
                 track_uris.append(track_info['id'])
                 playlist_sums['popularity'] += track_info['popularity']
                 
-                if track_info['popularity'] > max_pop : # find maximum popularity value per playlist
-                    max_pop = track_info['popularity']
-                    pop_song = track_info['name']
-                    pop_song_art = track_info['artists'][0]['name']
+                # find maximum popularity value per playlist
+                if track_info['popularity'] > maximum_song_popularity :
+                    maximum_song_popularity = track_info['popularity']
+                    most_popular_song_name = track_info['name']
+                    most_popular_song_artist = track_info['artists'][0]['name']
                 
-                if track_info['duration_ms'] > max_length : # find maximum song length per playlist
-                    max_length = track_info['duration_ms']
-                    long_song = track_info['name']
-                    long_song_art = track_info['artists'][0]['name']
+                # find maximum song length per playlist
+                if track_info['duration_ms'] > maximum_song_length :
+                    maximum_song_length = track_info['duration_ms']
+                    longest_song_name = track_info['name']
+                    longest_song_artist = track_info['artists'][0]['name']
 
             if cnt == 99 : # for dealing with paginated results if playlist has over 100 songs
                 audio_feats = sp.audio_features(tracks = track_uris) # get "audio features" for a group of tracks
         
                 for ind, song in enumerate(audio_feats) : # for each songs features
                     
+                    # add to playlist sums and update min and max songs for each audio feature
                     for audio_feature in audio_features_list:
-                        playlist_sums[audio_feature] += audio_feats[ind]['danceability']
+                        playlist_sums[audio_feature] += audio_feats[ind][audio_feature]
                         update_audio_feature(audio_feature, audio_feats[ind])
                     
                     playlist_sums['duration_ms'] += audio_feats[ind]['duration_ms']
@@ -104,8 +105,9 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
                 
                 for ind, song in enumerate(audio_feats) : # does the same as above but for a page of less than 100 songs
                     
+                    # add to playlist sums and update min and max songs for each audio feature
                     for audio_feature in audio_features_list:
-                        playlist_sums[audio_feature] += audio_feats[ind]['danceability']
+                        playlist_sums[audio_feature] += audio_feats[ind][audio_feature]
                         update_audio_feature(audio_feature, audio_feats[ind])
                     
                     playlist_sums['duration_ms'] += audio_feats[ind]['duration_ms']
@@ -121,33 +123,33 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
         
         global_length += playlist_sums['duration_ms']
         
-        if max_length > song_maximums['duration_ms']: # find maximum length song across all playlists
-            song_maximums['duration_ms'] = max_length
-            global_maximum_song_names['duration_ms'] = long_song
-            global_maximum_song_artists['duration_ms'] = long_song_art
+        # find maximum length song across all playlists
+        if maximum_song_length > song_maximums['duration_ms']:
+            song_maximums['duration_ms'] = maximum_song_length
+            global_maximum_song_names['duration_ms'] = longest_song_name
+            global_maximum_song_artists['duration_ms'] = longest_song_artist
         
-        if max_pop > song_maximums['popularity']: # find maximum popularity song across all playlists
-            song_maximums['popularity'] = max_pop
-            global_maximum_song_names['popularity'] = pop_song
-            global_maximum_song_artists['popularity'] = pop_song_art
+        # find maximum popularity song across all playlists
+        if maximum_song_popularity > song_maximums['popularity']:
+            song_maximums['popularity'] = maximum_song_popularity
+            global_maximum_song_names['popularity'] = most_popular_song_name
+            global_maximum_song_artists['popularity'] = most_popular_song_artist
         
         # find playlist with the highest average values for audio features
-        
         for audio_feature in playlist_averages.keys():
             if playlist_averages[audio_feature] > global_playlist_maxes[audio_feature]:
                 global_playlist_maxes[audio_feature] = playlist_averages[audio_feature]
-                global_maximum_playlist_names[audio_feature] = pl_name
+                global_maximum_playlist_names[audio_feature] = playlist_name
         
         # find playlist with the lowest average values for audio features
-
         for audio_feature in playlist_averages.keys():
             if playlist_averages[audio_feature] < global_playlist_mins[audio_feature]:
                 global_playlist_mins[audio_feature] = playlist_averages[audio_feature]
-                global_minimum_playlist_names[audio_feature] = pl_name
+                global_minimum_playlist_names[audio_feature] = playlist_name
 
-        # fixed_name = "{0:<18}".format(pl_name)
+        # fixed_name = "{0:<18}".format(playlist_name)
         # fixed_num_songs = "{0:>3}".format(str(num_songs))
-        print(pl_name)
+        print(playlist_name)
         print("Songs: %d" % (num_songs))
         print("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %s" % (
             playlist_averages['danceability'], 
@@ -159,8 +161,8 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
             playlist_averages['valence'], 
             playlist_averages['popularity'], 
             parse_time(playlist_averages['duration_ms'])))
-        print("Most Popular Song: %s (%d)" % (pop_song, max_pop))
-        print("Longest Song: %s (%s)" % (long_song, parse_time(max_length)))
+        print("Most Popular Song: %s by %s (%d)" % (most_popular_song_name, most_popular_song_artist, maximum_song_popularity))
+        print("Longest Song: %s by %s (%s)" % (longest_song_name, longest_song_artist, parse_time(maximum_song_length)))
         print("Playlist Duration: %s" % (parse_time(playlist_sums['duration_ms'])))
         print("")
         
