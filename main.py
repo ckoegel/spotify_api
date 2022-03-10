@@ -1,7 +1,7 @@
 import os
+import math
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from utils import *
 from objects import *
 
 scope_lib = "user-library-read"
@@ -10,6 +10,29 @@ my_pl_cnt = 0
 global_length = 0
 global_maximum_playlist_names = {}
 global_minimum_playlist_names = {}
+global_maximum_song_names = {}
+global_maximum_song_artists = {}
+
+def parse_time(time_ms) :   # parses a time duration in ms into a h:m:s string
+    time_s = time_ms / 1000
+    time_min = time_s / 60
+    time_sec = time_s % 60
+    
+    if time_s > 3599 :
+        time_hour = time_s / 3600
+        time_min = time_s % 3600 / 60
+        time_min_sec = str(math.trunc(time_hour)) + ":" + "{0:0>2}".format(str(math.trunc(time_min))) + ":" + "{0:0>2}".format(str(round(time_sec)))
+    else :
+        time_min_sec = str(math.trunc(time_min)) + ":" + "{0:0>2}".format(str(round(time_sec)))
+    
+    return time_min_sec
+
+def update_audio_feature(audio_feature, audio_features) :
+    if audio_features[audio_feature] > song_maximums[audio_feature]:
+        song_maximums[audio_feature] = audio_features[audio_feature]
+        song_info = sp.track(audio_features['id'])
+        global_maximum_song_names[audio_feature] = song_info['name']
+        global_maximum_song_artists[audio_feature] = song_info['artists'][0]['name']
 
 # auth token
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.environ.get('SPOTIFY_ID'), client_secret = os.environ.get('SPOTIFY_SECRET'), redirect_uri = os.environ.get('REDIRECT_URI'), scope=scope_playlist))
@@ -65,54 +88,9 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
         
                 for ind, song in enumerate(audio_feats) : # for each songs features
                     
-                    playlist_sums['danceability'] += audio_feats[ind]['danceability']
-                    if audio_feats[ind]['danceability'] > global_max_dance: # find maximum song danceability
-                        global_max_dance = audio_feats[ind]['danceability']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_dance_song = song_info['name']
-                        global_max_dance_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['energy'] += audio_feats[ind]['energy']
-                    if audio_feats[ind]['energy'] > global_max_energ: # find maximum song energy
-                        global_max_energ = audio_feats[ind]['energy']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_energ_song = song_info['name']
-                        global_max_energ_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['loudness'] += audio_feats[ind]['loudness']
-                    if audio_feats[ind]['loudness'] > global_max_loud: # find maximum song loudness
-                        global_max_loud = audio_feats[ind]['loudness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_loud_song = song_info['name']
-                        global_max_loud_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['speechiness'] += audio_feats[ind]['speechiness']
-                    if audio_feats[ind]['speechiness'] > global_max_speech: # find maximum song speechiness
-                        global_max_speech = audio_feats[ind]['speechiness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_speech_song = song_info['name']
-                        global_max_speech_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['acousticness'] += audio_feats[ind]['acousticness']
-                    if audio_feats[ind]['acousticness'] > global_max_acous: # find maximum song acousticness
-                        global_max_acous = audio_feats[ind]['acousticness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_acous_song = song_info['name']
-                        global_max_acous_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['instrumentalness'] += audio_feats[ind]['instrumentalness']
-                    if audio_feats[ind]['instrumentalness'] > global_max_instr: # find maximum song instrumentalness
-                        global_max_instr = audio_feats[ind]['instrumentalness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_instr_song = song_info['name']
-                        global_max_instr_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['valence'] += audio_feats[ind]['valence']
-                    if audio_feats[ind]['valence'] > global_max_valen: # find maximum song valence(happiness)
-                        global_max_valen = audio_feats[ind]['valence']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_valen_song = song_info['name']
-                        global_max_valen_art = song_info['artists'][0]['name']
+                    for audio_feature in audio_features_list:
+                        playlist_sums[audio_feature] += audio_feats[ind]['danceability']
+                        update_audio_feature(audio_feature, audio_feats[ind])
                     
                     playlist_sums['duration_ms'] += audio_feats[ind]['duration_ms']
                 
@@ -126,54 +104,9 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
                 
                 for ind, song in enumerate(audio_feats) : # does the same as above but for a page of less than 100 songs
                     
-                    playlist_sums['danceability'] += audio_feats[ind]['danceability']
-                    if audio_feats[ind]['danceability'] > global_max_dance:
-                        global_max_dance = audio_feats[ind]['danceability']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_dance_song = song_info['name']
-                        global_max_dance_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['energy'] += audio_feats[ind]['energy']
-                    if audio_feats[ind]['energy'] > global_max_energ:
-                        global_max_energ = audio_feats[ind]['energy']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_energ_song = song_info['name']
-                        global_max_energ_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['loudness'] += audio_feats[ind]['loudness']
-                    if audio_feats[ind]['loudness'] > global_max_loud:
-                        global_max_loud = audio_feats[ind]['loudness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_loud_song = song_info['name']
-                        global_max_loud_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['speechiness'] += audio_feats[ind]['speechiness']
-                    if audio_feats[ind]['speechiness'] > global_max_speech:
-                        global_max_speech = audio_feats[ind]['speechiness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_speech_song = song_info['name']
-                        global_max_speech_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['acousticness'] += audio_feats[ind]['acousticness']
-                    if audio_feats[ind]['acousticness'] > global_max_acous:
-                        global_max_acous = audio_feats[ind]['acousticness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_acous_song = song_info['name']
-                        global_max_acous_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['instrumentalness'] += audio_feats[ind]['instrumentalness']
-                    if audio_feats[ind]['instrumentalness'] > global_max_instr:
-                        global_max_instr = audio_feats[ind]['instrumentalness']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_instr_song = song_info['name']
-                        global_max_instr_art = song_info['artists'][0]['name']
-                    
-                    playlist_sums['valence'] += audio_feats[ind]['valence']
-                    if audio_feats[ind]['valence'] > global_max_valen:
-                        global_max_valen = audio_feats[ind]['valence']
-                        song_info = sp.track(audio_feats[ind]['id'])
-                        global_max_valen_song = song_info['name']
-                        global_max_valen_art = song_info['artists'][0]['name']
+                    for audio_feature in audio_features_list:
+                        playlist_sums[audio_feature] += audio_feats[ind]['danceability']
+                        update_audio_feature(audio_feature, audio_feats[ind])
                     
                     playlist_sums['duration_ms'] += audio_feats[ind]['duration_ms']
                 
@@ -188,15 +121,15 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
         
         global_length += playlist_sums['duration_ms']
         
-        if max_length > global_max_length: # find maximum length song across all playlists
-            global_max_length = max_length
-            global_long_song = long_song
-            global_max_long_art = long_song_art
+        if max_length > song_maximums['duration_ms']: # find maximum length song across all playlists
+            song_maximums['duration_ms'] = max_length
+            global_maximum_song_names['duration_ms'] = long_song
+            global_maximum_song_artists['duration_ms'] = long_song_art
         
-        if max_pop > global_max_pop: # find maximum popularity song across all playlists
-            global_max_pop = max_pop
-            global_max_pop_song = pop_song
-            global_max_pop_art = pop_song_art
+        if max_pop > song_maximums['popularity']: # find maximum popularity song across all playlists
+            song_maximums['popularity'] = max_pop
+            global_maximum_song_names['popularity'] = pop_song
+            global_maximum_song_artists['popularity'] = pop_song_art
         
         # find playlist with the highest average values for audio features
         
@@ -231,15 +164,8 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
         print("Playlist Duration: %s" % (parse_time(playlist_sums['duration_ms'])))
         print("")
         
-library_averages['popularity'] /= my_pl_cnt
-library_averages['duration_ms'] /= my_pl_cnt
-library_averages['danceability'] /= my_pl_cnt
-library_averages['energy'] /= my_pl_cnt
-library_averages['loudness'] /= my_pl_cnt
-library_averages['speechiness'] /= my_pl_cnt
-library_averages['acousticness'] /= my_pl_cnt
-library_averages['instrumentalness'] /= my_pl_cnt
-library_averages['valence'] /= my_pl_cnt
+for audio_feature in library_averages.keys():
+    library_averages[audio_feature] /= my_pl_cnt
     
 print("Playlist Stats: \n---------------")
 print("Highs:")
@@ -276,12 +202,12 @@ print("Total Length of All Playlists: %s\n" % (parse_time(global_length)))
 
 print("\nSong Stats:\n-----------")
 print("Highs:")
-print("Most Danceable Song: %s by %s (%.5f)" % (global_max_dance_song, global_max_dance_art, global_max_dance))
-print("Most Energetic Song: %s by %s (%.5f)" % (global_max_energ_song, global_max_energ_art, global_max_energ))
-print("Loudest Song: %s by %s (%.5fdB)" % (global_max_loud_song, global_max_loud_art, global_max_loud))
-print("Most Speechful Song: %s by %s (%.5f)" % (global_max_speech_song, global_max_speech_art, global_max_speech))
-print("Most Acoustic Song: %s by %s (%.5f)" % (global_max_acous_song, global_max_acous_art, global_max_acous))
-print("Most Instrumental Song: %s by %s (%.5f)" % (global_max_instr_song, global_max_instr_art, global_max_instr))
-print("Happiest Song: %s by %s (%.5f)" % (global_max_valen_song, global_max_valen_art, global_max_valen))
-print("Longest Song: %s by %s (%s)" % (global_long_song, global_max_long_art, parse_time(global_max_length)))
-print("Most Popular Song : %s by %s (%d)" % (global_max_pop_song, global_max_pop_art, global_max_pop))
+print("Most Danceable Song: %s by %s (%.5f)" % (global_maximum_song_names['danceability'], global_maximum_song_artists['danceability'], song_maximums['danceability']))
+print("Most Energetic Song: %s by %s (%.5f)" % (global_maximum_song_names['energy'], global_maximum_song_artists['energy'], song_maximums['energy']))
+print("Loudest Song: %s by %s (%.5fdB)" % (global_maximum_song_names['loudness'], global_maximum_song_artists['loudness'], song_maximums['loudness']))
+print("Most Speechful Song: %s by %s (%.5f)" % (global_maximum_song_names['speechiness'], global_maximum_song_artists['speechiness'], song_maximums['speechiness']))
+print("Most Acoustic Song: %s by %s (%.5f)" % (global_maximum_song_names['acousticness'], global_maximum_song_artists['acousticness'], song_maximums['acousticness']))
+print("Most Instrumental Song: %s by %s (%.5f)" % (global_maximum_song_names['instrumentalness'], global_maximum_song_artists['instrumentalness'], song_maximums['instrumentalness']))
+print("Happiest Song: %s by %s (%.5f)" % (global_maximum_song_names['valence'], global_maximum_song_artists['valence'], song_maximums['valence']))
+print("Longest Song: %s by %s (%s)" % (global_maximum_song_names['duration_ms'], global_maximum_song_artists['duration_ms'], parse_time(song_maximums['duration_ms'])))
+print("Most Popular Song : %s by %s (%d)" % (global_maximum_song_names['popularity'], global_maximum_song_artists['popularity'], song_maximums['popularity']))

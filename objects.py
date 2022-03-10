@@ -1,4 +1,3 @@
-
 audio_features_list = [
     'danceability',
     'energy',
@@ -49,12 +48,23 @@ library_averages = {
 }
 
 # global maximum song values
-global_max_length = 0
-global_max_pop = 0
-global_max_dance = 0
-global_max_energ = 0
-global_max_loud = -60
-global_max_speech = 0
-global_max_acous = 0
-global_max_instr = 0
-global_max_valen = 0
+song_maximums = {
+    'popularity': 0,
+    'duration_ms': 0,
+    'danceability': 0,
+    'energy': 0,
+    'loudness': -60,
+    'speechiness': 0,
+    'acousticness': 0,
+    'instrumentalness': 0,
+    'valence': 0,
+}
+# global_max_length = 0
+# global_max_pop = 0
+# global_max_dance = 0
+# global_max_energ = 0
+# global_max_loud = -60
+# global_max_speech = 0
+# global_max_acous = 0
+# global_max_instr = 0
+# global_max_valen = 0
