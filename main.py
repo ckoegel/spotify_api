@@ -1,6 +1,7 @@
 import os
 import math
 import spotipy
+from mdutils.mdutils import MdUtils
 from spotipy.oauth2 import SpotifyOAuth
 from objects import *
 
@@ -36,8 +37,10 @@ def update_audio_feature(audio_feature, audio_features) :
 
 # auth token
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.environ.get('SPOTIFY_ID'), client_secret = os.environ.get('SPOTIFY_SECRET'), redirect_uri = os.environ.get('REDIRECT_URI'), scope=scope_playlist))
-
 res_playlists = sp.current_user_playlists() # get list of playlists
+
+# md files
+playlists_stats = MdUtils(file_name='playlists_stats', title='Individual Playlist Statistics')
 
 for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on account
     playlist_name = playlist['name']
@@ -147,25 +150,27 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
                 global_playlist_mins[audio_feature] = playlist_averages[audio_feature]
                 global_minimum_playlist_names[audio_feature] = playlist_name
 
-        # fixed_name = "{0:<18}".format(playlist_name)
-        # fixed_num_songs = "{0:>3}".format(str(num_songs))
-        print(playlist_name)
-        print("Songs: %d" % (num_songs))
-        print("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %s" % (
-            playlist_averages['danceability'], 
-            playlist_averages['energy'], 
-            playlist_averages['loudness'], 
-            playlist_averages['speechiness'], 
-            playlist_averages['acousticness'], 
-            playlist_averages['instrumentalness'], 
-            playlist_averages['valence'], 
-            playlist_averages['popularity'], 
-            parse_time(playlist_averages['duration_ms'])))
-        print("Most Popular Song: %s by %s (%d)" % (most_popular_song_name, most_popular_song_artist, maximum_song_popularity))
-        print("Longest Song: %s by %s (%s)" % (longest_song_name, longest_song_artist, parse_time(maximum_song_length)))
-        print("Playlist Duration: %s" % (parse_time(playlist_sums['duration_ms'])))
-        print("")
         
+        # format playlist averages for writing to md table        
+        for key in playlist_averages: playlist_averages[key] = round(playlist_averages[key], 3)
+        playlist_averages['duration_ms'] = parse_time(playlist_averages['duration_ms'])
+        playlist_averages['length'] = playlist_averages.pop('duration_ms')
+        feats = []
+        feats.extend(key.capitalize() for key in playlist_averages.keys())
+        feats.extend(playlist_averages.values())
+        
+        # create playlist stats md file
+        playlists_stats.new_header(level=2, title=playlist_name, style='setext', add_table_of_contents='n')
+        playlists_stats.new_line("Playlist Averages", bold_italics_code='b')
+        playlists_stats.new_table(columns=len(playlist_averages), rows=2, text=feats)
+        playlists_stats.new_line("Number of Songs: %d" % (num_songs))
+        playlists_stats.new_line("Most Popular Song: %s by %s (%d)" % (most_popular_song_name, most_popular_song_artist, maximum_song_popularity))
+        playlists_stats.new_line("Longest Song: %s by %s (%s)" % (longest_song_name, longest_song_artist, parse_time(maximum_song_length)))
+        playlists_stats.new_line("Playlist Duration: %s" % (parse_time(playlist_sums['duration_ms'])))
+        playlists_stats.new_line()
+
+playlists_stats.create_md_file()
+
 for audio_feature in library_averages.keys():
     library_averages[audio_feature] /= my_pl_cnt
     
