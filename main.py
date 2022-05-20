@@ -1,6 +1,7 @@
 import os
 import math
 import spotipy
+from mdutils.mdutils import MdUtils
 from spotipy.oauth2 import SpotifyOAuth
 from objects import *
 
@@ -36,8 +37,11 @@ def update_audio_feature(audio_feature, audio_features) :
 
 # auth token
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id = os.environ.get('SPOTIFY_ID'), client_secret = os.environ.get('SPOTIFY_SECRET'), redirect_uri = os.environ.get('REDIRECT_URI'), scope=scope_playlist))
-
 res_playlists = sp.current_user_playlists() # get list of playlists
+
+# md files
+playlists_stats = MdUtils(file_name='playlists_stats', title='Individual Playlist Statistics')
+global_stats = MdUtils(file_name='README.md', title='Spotify Playlist Statistics')
 
 for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on account
     playlist_name = playlist['name']
@@ -147,69 +151,73 @@ for idx, playlist in enumerate(res_playlists['items']) : # for each playlist on 
                 global_playlist_mins[audio_feature] = playlist_averages[audio_feature]
                 global_minimum_playlist_names[audio_feature] = playlist_name
 
-        # fixed_name = "{0:<18}".format(playlist_name)
-        # fixed_num_songs = "{0:>3}".format(str(num_songs))
-        print(playlist_name)
-        print("Songs: %d" % (num_songs))
-        print("%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %s" % (
-            playlist_averages['danceability'], 
-            playlist_averages['energy'], 
-            playlist_averages['loudness'], 
-            playlist_averages['speechiness'], 
-            playlist_averages['acousticness'], 
-            playlist_averages['instrumentalness'], 
-            playlist_averages['valence'], 
-            playlist_averages['popularity'], 
-            parse_time(playlist_averages['duration_ms'])))
-        print("Most Popular Song: %s by %s (%d)" % (most_popular_song_name, most_popular_song_artist, maximum_song_popularity))
-        print("Longest Song: %s by %s (%s)" % (longest_song_name, longest_song_artist, parse_time(maximum_song_length)))
-        print("Playlist Duration: %s" % (parse_time(playlist_sums['duration_ms'])))
-        print("")
         
+        # format playlist averages for writing to md table        
+        for key in playlist_averages: playlist_averages[key] = round(playlist_averages[key], 3)
+        playlist_averages['duration_ms'] = parse_time(playlist_averages['duration_ms'])
+        playlist_averages['length'] = playlist_averages.pop('duration_ms')
+        feats = []
+        feats.extend(key.capitalize() for key in playlist_averages.keys())
+        feats.extend(playlist_averages.values())
+        
+        # create playlist stats md file
+        playlists_stats.new_header(level=2, title=playlist_name, style='setext', add_table_of_contents='n')
+        playlists_stats.new_line("Playlist Averages", bold_italics_code='b')
+        playlists_stats.new_table(columns=len(playlist_averages), rows=2, text=feats)
+        playlists_stats.new_line("Number of Songs: %d" % (num_songs))
+        playlists_stats.new_line("Most Popular Song: %s by %s (%d)" % (most_popular_song_name, most_popular_song_artist, maximum_song_popularity))
+        playlists_stats.new_line("Longest Song: %s by %s (%s)" % (longest_song_name, longest_song_artist, parse_time(maximum_song_length)))
+        playlists_stats.new_line("Playlist Duration: %s" % (parse_time(playlist_sums['duration_ms'])))
+        playlists_stats.new_line()
+
+playlists_stats.create_md_file()
+
 for audio_feature in library_averages.keys():
     library_averages[audio_feature] /= my_pl_cnt
     
-print("Playlist Stats: \n---------------")
-print("Highs:")
-print("Most Danceable Playlist: %s (%.5f)" % (global_maximum_playlist_names['danceability'], global_playlist_maxes['danceability']))
-print("Most Energetic Playlist: %s (%.5f)" % (global_maximum_playlist_names['energy'], global_playlist_maxes['energy']))
-print("Loudest Playlist: %s (%.5fdB)" % (global_maximum_playlist_names['loudness'], global_playlist_maxes['loudness']))
-print("Most Speechful Playlist: %s (%.5f)" % (global_maximum_playlist_names['speechiness'], global_playlist_maxes['speechiness']))
-print("Most Acoustic Playlist: %s (%.5f)" % (global_maximum_playlist_names['acousticness'], global_playlist_maxes['acousticness']))
-print("Most Instrumental Playlist: %s (%.5f)" % (global_maximum_playlist_names['instrumentalness'], global_playlist_maxes['instrumentalness']))
-print("Happiest Playlist: %s (%.5f)" % (global_maximum_playlist_names['valence'], global_playlist_maxes['valence']))
-print("Most Popular Playlist: %s (%.5f)" % (global_maximum_playlist_names['popularity'], global_playlist_maxes['popularity']))
-print("Playlist with Longest Average Song Length: %s (%s)\n" % (global_maximum_playlist_names['duration_ms'], parse_time(global_playlist_maxes['duration_ms'])))
-print("Lows:")
-print("Least Danceable Playlist: %s (%.5f)" % (global_minimum_playlist_names['danceability'], global_playlist_mins['danceability']))
-print("Least Energetic Playlist: %s (%.5f)" % (global_minimum_playlist_names['energy'], global_playlist_mins['energy']))
-print("Quietest Playlist: %s (%.5fdB)" % (global_minimum_playlist_names['loudness'], global_playlist_mins['loudness']))
-print("Least Speechful Playlist: %s (%.5f)" % (global_minimum_playlist_names['speechiness'], global_playlist_mins['speechiness']))
-print("Least Acoustic Playlist: %s (%.5f)" % (global_minimum_playlist_names['acousticness'], global_playlist_mins['acousticness']))
-print("Least Instrumental Playlist: %s (%.5f)" % (global_minimum_playlist_names['instrumentalness'], global_playlist_mins['instrumentalness']))
-print("Saddest Playlist: %s (%.5f)" % (global_minimum_playlist_names['valence'], global_playlist_mins['valence']))
-print("Least Popular Playlist: %s (%.5f)" % (global_minimum_playlist_names['popularity'], global_playlist_mins['popularity']))
-print("Playlist with Shortest Average Song Length: %s (%s)\n" % (global_minimum_playlist_names['duration_ms'], parse_time(global_playlist_mins['duration_ms'])))
-print("Totals")
-print("Average Danceability: %.5f" % (library_averages['danceability']))
-print("Average Energy: %.5f" % (library_averages['energy']))
-print("Average Loudness: %.5fdB" % (library_averages['loudness']))
-print("Average Speechfulness: %.5f" % (library_averages['speechiness']))
-print("Average Acousticness: %.5f" % (library_averages['acousticness']))
-print("Average Instrumentalness: %.5f" % (library_averages['instrumentalness']))
-print("Overall Happiness: %.5f" % (library_averages['valence']))
-print("Overall Popularity: %.5f" % (library_averages['popularity']))
-print("Average Song Length: %s" % (parse_time(library_averages['duration_ms'])))
-print("Total Length of All Playlists: %s\n" % (parse_time(global_length)))
+global_stats.new_header(level=2, title="Playlist Stats", style='setext', add_table_of_contents='n')
+global_stats.new_line("Highs:", bold_italics_code='b')
+global_stats.new_line("Most Danceable Playlist: %s (%.5f)" % (global_maximum_playlist_names['danceability'], global_playlist_maxes['danceability']))
+global_stats.new_line("Most Energetic Playlist: %s (%.5f)" % (global_maximum_playlist_names['energy'], global_playlist_maxes['energy']))
+global_stats.new_line("Loudest Playlist: %s (%.5fdB)" % (global_maximum_playlist_names['loudness'], global_playlist_maxes['loudness']))
+global_stats.new_line("Most Speechful Playlist: %s (%.5f)" % (global_maximum_playlist_names['speechiness'], global_playlist_maxes['speechiness']))
+global_stats.new_line("Most Acoustic Playlist: %s (%.5f)" % (global_maximum_playlist_names['acousticness'], global_playlist_maxes['acousticness']))
+global_stats.new_line("Most Instrumental Playlist: %s (%.5f)" % (global_maximum_playlist_names['instrumentalness'], global_playlist_maxes['instrumentalness']))
+global_stats.new_line("Happiest Playlist: %s (%.5f)" % (global_maximum_playlist_names['valence'], global_playlist_maxes['valence']))
+global_stats.new_line("Most Popular Playlist: %s (%.5f)" % (global_maximum_playlist_names['popularity'], global_playlist_maxes['popularity']))
+global_stats.new_line("Playlist with Longest Average Song Length: %s (%s)\n" % (global_maximum_playlist_names['duration_ms'], parse_time(global_playlist_maxes['duration_ms'])))
+global_stats.new_line("Lows:", bold_italics_code='b')
+global_stats.new_line("Least Danceable Playlist: %s (%.5f)" % (global_minimum_playlist_names['danceability'], global_playlist_mins['danceability']))
+global_stats.new_line("Least Energetic Playlist: %s (%.5f)" % (global_minimum_playlist_names['energy'], global_playlist_mins['energy']))
+global_stats.new_line("Quietest Playlist: %s (%.5fdB)" % (global_minimum_playlist_names['loudness'], global_playlist_mins['loudness']))
+global_stats.new_line("Least Speechful Playlist: %s (%.5f)" % (global_minimum_playlist_names['speechiness'], global_playlist_mins['speechiness']))
+global_stats.new_line("Least Acoustic Playlist: %s (%.5f)" % (global_minimum_playlist_names['acousticness'], global_playlist_mins['acousticness']))
+global_stats.new_line("Least Instrumental Playlist: %s (%.5f)" % (global_minimum_playlist_names['instrumentalness'], global_playlist_mins['instrumentalness']))
+global_stats.new_line("Saddest Playlist: %s (%.5f)" % (global_minimum_playlist_names['valence'], global_playlist_mins['valence']))
+global_stats.new_line("Least Popular Playlist: %s (%.5f)" % (global_minimum_playlist_names['popularity'], global_playlist_mins['popularity']))
+global_stats.new_line("Playlist with Shortest Average Song Length: %s (%s)\n" % (global_minimum_playlist_names['duration_ms'], parse_time(global_playlist_mins['duration_ms'])))
+global_stats.new_line("Totals:", bold_italics_code='b')
+global_stats.new_line("Average Danceability: %.5f" % (library_averages['danceability']))
+global_stats.new_line("Average Energy: %.5f" % (library_averages['energy']))
+global_stats.new_line("Average Loudness: %.5fdB" % (library_averages['loudness']))
+global_stats.new_line("Average Speechfulness: %.5f" % (library_averages['speechiness']))
+global_stats.new_line("Average Acousticness: %.5f" % (library_averages['acousticness']))
+global_stats.new_line("Average Instrumentalness: %.5f" % (library_averages['instrumentalness']))
+global_stats.new_line("Overall Happiness: %.5f" % (library_averages['valence']))
+global_stats.new_line("Overall Popularity: %.5f" % (library_averages['popularity']))
+global_stats.new_line("Average Song Length: %s" % (parse_time(library_averages['duration_ms'])))
+global_stats.new_line("Total Length of All Playlists: %s\n" % (parse_time(global_length)))
 
-print("\nSong Stats:\n-----------")
-print("Highs:")
-print("Most Danceable Song: %s by %s (%.5f)" % (global_maximum_song_names['danceability'], global_maximum_song_artists['danceability'], song_maximums['danceability']))
-print("Most Energetic Song: %s by %s (%.5f)" % (global_maximum_song_names['energy'], global_maximum_song_artists['energy'], song_maximums['energy']))
-print("Loudest Song: %s by %s (%.5fdB)" % (global_maximum_song_names['loudness'], global_maximum_song_artists['loudness'], song_maximums['loudness']))
-print("Most Speechful Song: %s by %s (%.5f)" % (global_maximum_song_names['speechiness'], global_maximum_song_artists['speechiness'], song_maximums['speechiness']))
-print("Most Acoustic Song: %s by %s (%.5f)" % (global_maximum_song_names['acousticness'], global_maximum_song_artists['acousticness'], song_maximums['acousticness']))
-print("Most Instrumental Song: %s by %s (%.5f)" % (global_maximum_song_names['instrumentalness'], global_maximum_song_artists['instrumentalness'], song_maximums['instrumentalness']))
-print("Happiest Song: %s by %s (%.5f)" % (global_maximum_song_names['valence'], global_maximum_song_artists['valence'], song_maximums['valence']))
-print("Longest Song: %s by %s (%s)" % (global_maximum_song_names['duration_ms'], global_maximum_song_artists['duration_ms'], parse_time(song_maximums['duration_ms'])))
-print("Most Popular Song : %s by %s (%d)" % (global_maximum_song_names['popularity'], global_maximum_song_artists['popularity'], song_maximums['popularity']))
+global_stats.new_header(level=2, title="Song Stats", style='setext', add_table_of_contents='n')
+global_stats.new_line("Highs:", bold_italics_code='b')
+global_stats.new_line("Most Danceable Song: %s by %s (%.5f)" % (global_maximum_song_names['danceability'], global_maximum_song_artists['danceability'], song_maximums['danceability']))
+global_stats.new_line("Most Energetic Song: %s by %s (%.5f)" % (global_maximum_song_names['energy'], global_maximum_song_artists['energy'], song_maximums['energy']))
+global_stats.new_line("Loudest Song: %s by %s (%.5fdB)" % (global_maximum_song_names['loudness'], global_maximum_song_artists['loudness'], song_maximums['loudness']))
+global_stats.new_line("Most Speechful Song: %s by %s (%.5f)" % (global_maximum_song_names['speechiness'], global_maximum_song_artists['speechiness'], song_maximums['speechiness']))
+global_stats.new_line("Most Acoustic Song: %s by %s (%.5f)" % (global_maximum_song_names['acousticness'], global_maximum_song_artists['acousticness'], song_maximums['acousticness']))
+global_stats.new_line("Most Instrumental Song: %s by %s (%.5f)" % (global_maximum_song_names['instrumentalness'], global_maximum_song_artists['instrumentalness'], song_maximums['instrumentalness']))
+global_stats.new_line("Happiest Song: %s by %s (%.5f)" % (global_maximum_song_names['valence'], global_maximum_song_artists['valence'], song_maximums['valence']))
+global_stats.new_line("Longest Song: %s by %s (%s)" % (global_maximum_song_names['duration_ms'], global_maximum_song_artists['duration_ms'], parse_time(song_maximums['duration_ms'])))
+global_stats.new_line("Most Popular Song : %s by %s (%d)" % (global_maximum_song_names['popularity'], global_maximum_song_artists['popularity'], song_maximums['popularity']))
+
+global_stats.create_md_file()
